@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -e
+
+# 统一入口：透传到 alicec（dotnet run）。
+# 支持：alice <file.alice> / alice run <file.alice> / alice selftest / ...
+dotnet run --project "$(dirname "$0")/src/alicec" -- "$@"
