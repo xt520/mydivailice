@@ -1,0 +1,25 @@
+# Build outputs
+**/bin/
+**/obj/
+artifacts/
+
+# IDE / tooling
+.vs/
+.vscode/
+**/*.user
+**/*.suo
+**/*.cache
+**/*.nupkg
+**/*.snupkg
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Local scratch
+alice_temp_net_test.txt
+nul
+
+# Legacy/duplicate folders (kept locally, not in repo)
+srcAlice.Std/
+srcalicec/
