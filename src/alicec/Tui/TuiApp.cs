@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using alicec.ConsoleUi;
 using Alice.Compiler;
 
 namespace alicec.Tui;
@@ -57,12 +58,18 @@ internal static class TuiApp
                         var detected = DetectSingleEntryInDirectory(output, workDir);
                         if (detected is null) break;
                         workDir = Path.GetDirectoryName(Path.GetFullPath(detected)) ?? workDir;
-                        return await Program.RunCommandFromTuiAsync(new[] { "run", detected }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "run"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "run", detected }).ConfigureAwait(false);
+                        }
                     }
                     {
                         var p = ResolvePath(workDir, runPath.Trim());
                         if (p is not null) workDir = Path.GetDirectoryName(p) ?? workDir;
-                        return await Program.RunCommandFromTuiAsync(new[] { "run", p ?? runPath.Trim() }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "run"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "run", p ?? runPath.Trim() }).ConfigureAwait(false);
+                        }
                     }
                 case "2":
                     await output.WriteLineAsync("输入要构建的 .alice/.ailice 路径（留空自动查找当前目录入口）：").ConfigureAwait(false);
@@ -73,12 +80,18 @@ internal static class TuiApp
                         var detected = DetectSingleEntryInDirectory(output, workDir);
                         if (detected is null) break;
                         workDir = Path.GetDirectoryName(Path.GetFullPath(detected)) ?? workDir;
-                        return await Program.RunCommandFromTuiAsync(new[] { "build", detected }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "build"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "build", detected }).ConfigureAwait(false);
+                        }
                     }
                     {
                         var p = ResolvePath(workDir, buildPath.Trim());
                         if (p is not null) workDir = Path.GetDirectoryName(p) ?? workDir;
-                        return await Program.RunCommandFromTuiAsync(new[] { "build", p ?? buildPath.Trim() }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "build"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "build", p ?? buildPath.Trim() }).ConfigureAwait(false);
+                        }
                     }
                 case "4":
                 case "5":
@@ -98,7 +111,10 @@ internal static class TuiApp
                             "5" => "single",
                             _ => "both"
                         };
-                        return await Program.RunCommandFromTuiAsync(new[] { "package", detected, "--mode", mode }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "package"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "package", detected, "--mode", mode }).ConfigureAwait(false);
+                        }
                     }
                     var mode2 = choice.Trim() switch
                     {
@@ -110,7 +126,10 @@ internal static class TuiApp
                     {
                         var p = ResolvePath(workDir, pkgPath.Trim());
                         if (p is not null) workDir = Path.GetDirectoryName(p) ?? workDir;
-                        return await Program.RunCommandFromTuiAsync(new[] { "package", p ?? pkgPath.Trim(), "--mode", mode2 }).ConfigureAwait(false);
+                        using (ProgressScope.Begin(Console.Error, "TUI", "package"))
+                        {
+                            return await Program.RunCommandFromTuiAsync(new[] { "package", p ?? pkgPath.Trim(), "--mode", mode2 }).ConfigureAwait(false);
+                        }
                     }
             }
 

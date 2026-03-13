@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using alicec.ConsoleUi;
 
 namespace Alice.Compiler;
 
@@ -323,9 +324,11 @@ internal sealed class ModuleLoader
 
     private CompilationUnit? ParseFile(string path, TextWriter diagnostics)
     {
+        ProgressScope.Update($"解析 {Path.GetFileName(path)}");
         var text = File.ReadAllText(path);
         var lexer = new Lexer(text, path);
         var tokens = lexer.LexAll(out var lexDiagnostics);
+        AstFx.Tick("tokens", tokens.Count);
         if (lexDiagnostics.Count > 0)
         {
             foreach (var d in lexDiagnostics)
@@ -337,6 +340,7 @@ internal sealed class ModuleLoader
 
         var parser = new Parser(tokens, path);
         var unit = parser.ParseCompilationUnit(out var parseDiagnostics);
+        AstFx.Tick("ast", unit.Functions.Count + unit.Classes.Count + unit.Structs.Count + unit.Enums.Count + unit.Interfaces.Count);
         if (parseDiagnostics.Count > 0)
         {
             foreach (var d in parseDiagnostics)
