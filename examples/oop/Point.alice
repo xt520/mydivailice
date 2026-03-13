@@ -1,0 +1,10 @@
+namespace oop
+
+class Point {
+  public { x:int; y:int }
+
+  public fun Point(x:int, y:int) {
+    this.x = x
+    this.y = y
+  }
+}

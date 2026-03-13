@@ -1,0 +1,14 @@
+namespace ioex
+
+import io as io
+
+fun main() {
+  path := "alice_tmp_defer.txt"
+  f := io.create(path)
+  defer f.Close()
+  f.Write(io.utf8Encode("hello"))
+  f.Flush()
+  f.Close()
+  io.remove(path)
+  print("ok")
+}

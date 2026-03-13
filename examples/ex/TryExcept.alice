@@ -1,0 +1,16 @@
+namespace ex
+
+fun boom() {
+  raise "oops"
+}
+
+fun main() {
+  try {
+    boom()
+    print("unreachable")
+  } except (e:any) {
+    print("caught")
+  } finally {
+    print("finally")
+  }
+}

@@ -1,0 +1,11 @@
+namespace byteex
+
+import bytes as bytes
+import io as io
+
+fun main() {
+  b := new u8[4]
+  bytes.writeU32BE(b, 0, 16909060)
+  print(bytes.readU32BE(b, 0))
+  print(io.utf8Decode(bytes.concat(io.utf8Encode("a"), io.utf8Encode("b"))))
+}

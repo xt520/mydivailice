@@ -1,0 +1,10 @@
+namespace asyncex
+
+import async as a
+import time as time
+
+fun main() {
+  x := a.DelayMs(1)
+  time.sleepMs(5)
+  print("ok")
+}

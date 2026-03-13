@@ -1,0 +1,21 @@
+namespace oop
+
+interface IA {
+  fun A(): int
+}
+
+interface IB {
+  IA
+  fun B(): int
+}
+
+class X {
+  public fun A(): int { return 1 }
+  public fun B(): int { return 2 }
+}
+
+fun main() {
+  x := new X()
+  f := fun (v:IB): int { return v.A() + v.B() }
+  print(f(x))
+}

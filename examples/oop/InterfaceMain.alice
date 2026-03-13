@@ -1,0 +1,7 @@
+namespace oop
+
+import oop.IAdder as A
+
+fun main() {
+  print(A.sum2(new MyAdder()))
+}

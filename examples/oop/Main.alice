@@ -1,0 +1,8 @@
+namespace oop
+
+import oop.Util as U
+
+fun main() {
+  p := U.makePoint(1, 2)
+  print(p.x + p.y)
+}

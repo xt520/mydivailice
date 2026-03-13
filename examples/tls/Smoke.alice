@@ -1,0 +1,7 @@
+namespace tlsex
+
+import net.tls as tls
+
+fun main() {
+  print(tls.Smoke())
+}

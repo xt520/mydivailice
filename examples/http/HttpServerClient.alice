@@ -1,0 +1,25 @@
+namespace httpex
+
+import net.http as http
+import net.http.server as srv
+import thread as th
+import time as time
+
+fun main() {
+  portBox := new int[1]
+
+  p := srv.serveOnce("127.0.0.1", 0, fun (req:http.Request): srv.HttpResponse {
+      resp := new srv.HttpResponse()
+      resp.status = 200
+      resp.headers = ["Content-Type: text/plain; charset=utf-8"]
+      resp.body = "ok"
+      return resp
+    })
+  portBox[0] = p
+
+  time.sleepMs(50)
+  url := "http://127.0.0.1:" + portBox[0] + "/"
+  text := http.getText(url)
+  print(text)
+
+}

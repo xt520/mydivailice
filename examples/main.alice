@@ -1,0 +1,4 @@
+fun main(){
+nun:int=520
+    print(nun)
+}

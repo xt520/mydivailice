@@ -1,0 +1,42 @@
+namespace netex
+
+import net as net
+import io as io
+import thread as th
+import time as time
+
+fun main() {
+  ln := net.listenTcp("127.0.0.1", 0)
+  addr := ln.Addr()
+  port := addr.Port()
+
+  h := th.spawn(fun () {
+    c := ln.Accept()
+    buf := new u8[16]
+    n := c.Read(buf)
+    b2 := new u8[n]
+    i := 0
+    while i < n {
+      b2[i] = buf[i]
+      i = i + 1
+    }
+    c.Write(b2)
+    c.Flush()
+    c.Close()
+    ln.Close()
+  })
+
+  time.sleepMs(10)
+
+  conn := net.dialTcp("127.0.0.1", port)
+  conn.Write(io.utf8Encode("pong"))
+  conn.Flush()
+
+  rbuf := new u8[16]
+  rn := conn.Read(rbuf)
+  conn.Close()
+
+  print(io.utf8DecodeN(rbuf, rn))
+
+  h.Join()
+}

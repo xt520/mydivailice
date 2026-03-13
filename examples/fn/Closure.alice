@@ -1,0 +1,10 @@
+namespace fn
+
+fun makeAdder(n:int): (int)->int {
+  return fun (x:int): int { return x + n }
+}
+
+fun main() {
+  add5 := makeAdder(5)
+  print(add5(3))
+}

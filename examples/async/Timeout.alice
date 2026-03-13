@@ -1,0 +1,18 @@
+namespace asyncex
+
+import async as a
+import time as time
+
+async fun slow(): int {
+  await a.DelayMs(50)
+  return 1
+}
+
+async fun main() {
+  try {
+    _ := await a.withTimeout(slow(), 1)
+    print("bad")
+  } except (e:any) {
+    print("timeout")
+  }
+}

@@ -1,0 +1,11 @@
+namespace genex
+
+class Box<T = int> {
+  public value:T
+  public fun Box(v:T) { this.value = v }
+}
+
+fun main() {
+  b := new Box(3)
+  print(b.value)
+}

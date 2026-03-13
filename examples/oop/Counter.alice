@@ -1,0 +1,20 @@
+namespace oop
+
+class Counter {
+  value:int = 0
+
+  public fun Inc() {
+    this.value = this.value + 1
+  }
+
+  public fun Get(): int {
+    return this.value
+  }
+}
+
+fun main() {
+  c := new Counter()
+  c.Inc()
+  c.Inc()
+  print(c.Get())
+}

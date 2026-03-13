@@ -1,0 +1,10 @@
+namespace unsafeex
+
+import mem as mem
+
+@unsafe
+fun main() {
+  b := mem.alloc(4)
+  mem.free(b)
+  print("ok")
+}

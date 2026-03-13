@@ -1,0 +1,10 @@
+namespace castex
+
+fun main() {
+  x: int = 65
+  c := (x as char)
+  print(c)
+
+  y := (x as u8)
+  print(y)
+}

@@ -1,0 +1,11 @@
+namespace genex
+
+type Box<T> = T[]
+
+fun main() {
+  xs: Box<int> = new int[3]
+  xs[0] = 1
+  xs[1] = 2
+  xs[2] = 3
+  print(xs)
+}

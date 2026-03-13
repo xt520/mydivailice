@@ -1,0 +1,9 @@
+namespace oop
+
+interface IAdder {
+  fun Add(a:int, b:int): int
+}
+
+fun sum2(adder:IAdder): int {
+  return adder.Add(10, 20)
+}

@@ -1,0 +1,20 @@
+namespace slicex
+
+import slice as slice
+
+fun main() {
+  a := [1, 2, 3, 4, 5]
+  s := slice.FromArray(a)
+
+  // 数组切片
+  mid := a[1:4]
+  print(mid)
+
+  // slice 切片
+  mid2 := s[1:4]
+  print(mid2)
+
+  // slice 索引读写（回写到底层数组）
+  mid2[1] = 99
+  print(a)
+}

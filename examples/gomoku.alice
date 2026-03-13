@@ -1,0 +1,273 @@
+// 控制台五子棋（Gomoku）
+//
+// 运行：
+//   dotnet run --project src/alicec -- run examples/gomoku.alice
+//
+// 玩法：
+//   - 输入：x y（或 x,y），坐标从 1 开始
+//   - q 退出
+//   - r 重开
+
+import io as io
+
+fun idx(size:int, x:int, y:int): int {
+  return y * size + x
+}
+
+fun pad2(n:int): string {
+  if n < 10 {
+    return " " + n
+  }
+  return "" + n
+}
+
+fun cellChar(v:int): string {
+  if v == 1 { return "X" }
+  if v == 2 { return "O" }
+  return "."
+}
+
+fun firstNonSep(line:string): int {
+  bs := io.utf8Encode(line)
+  i := 0
+  while i < bs.length {
+    c := bs[i]
+    // 空格(32) / 制表(9) / 回车(13) / 换行(10) / 逗号(44)
+    if c != 32 {
+      if c != 9 {
+        if c != 13 {
+          if c != 10 {
+            if c != 44 {
+              return c
+            }
+          }
+        }
+      }
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+// 从一行里解析出前两个整数（忽略空白与逗号等分隔符）
+// 结果写入 outXY[0], outXY[1]（1-based 坐标），返回是否成功找到两个数。
+fun tryParseTwoInts(line:string, outXY:int[]): bool {
+  outXY[0] = 0
+  outXY[1] = 0
+
+  numsFound := 0
+  acc := 0
+  inNum := false
+
+  bs := io.utf8Encode(line)
+  i := 0
+  while i < bs.length {
+    c := bs[i]
+    if c >= 48 {
+      if c <= 57 {
+        acc = acc * 10 + (c - 48)
+        inNum = true
+      } else {
+        if inNum {
+          if numsFound == 0 { outXY[0] = acc }
+          if numsFound == 1 { outXY[1] = acc }
+          numsFound = numsFound + 1
+          acc = 0
+          inNum = false
+          if numsFound >= 2 { return true }
+        }
+      }
+    } else {
+      if inNum {
+        if numsFound == 0 { outXY[0] = acc }
+        if numsFound == 1 { outXY[1] = acc }
+        numsFound = numsFound + 1
+        acc = 0
+        inNum = false
+        if numsFound >= 2 { return true }
+      }
+    }
+    i = i + 1
+  }
+
+  if inNum {
+    if numsFound == 0 { outXY[0] = acc }
+    if numsFound == 1 { outXY[1] = acc }
+    numsFound = numsFound + 1
+  }
+
+  return numsFound >= 2
+}
+
+fun countOneDir(board:int[], size:int, x:int, y:int, dx:int, dy:int, player:int): int {
+  c := 0
+  cx := x + dx
+  cy := y + dy
+  while true {
+    if cx < 0 { break }
+    if cy < 0 { break }
+    if cx >= size { break }
+    if cy >= size { break }
+    if board[idx(size, cx, cy)] != player { break }
+    c = c + 1
+    cx = cx + dx
+    cy = cy + dy
+  }
+  return c
+}
+
+fun checkWin(board:int[], size:int, x:int, y:int, player:int): bool {
+  // 四个方向：横、竖、主对角线、副对角线
+  a := 1 + countOneDir(board, size, x, y, 1, 0, player) + countOneDir(board, size, x, y, -1, 0, player)
+  if a >= 5 { return true }
+
+  b := 1 + countOneDir(board, size, x, y, 0, 1, player) + countOneDir(board, size, x, y, 0, -1, player)
+  if b >= 5 { return true }
+
+  c := 1 + countOneDir(board, size, x, y, 1, 1, player) + countOneDir(board, size, x, y, -1, -1, player)
+  if c >= 5 { return true }
+
+  d := 1 + countOneDir(board, size, x, y, 1, -1, player) + countOneDir(board, size, x, y, -1, 1, player)
+  if d >= 5 { return true }
+
+  return false
+}
+
+fun render(board:int[], size:int) {
+  // 列号
+  header := "   "
+  x := 0
+  while x < size {
+    header = header + pad2(x + 1) + " "
+    x = x + 1
+  }
+  print(header)
+
+  // 每行
+  y := 0
+  while y < size {
+    line := pad2(y + 1) + " "
+    x2 := 0
+    while x2 < size {
+      v := board[idx(size, x2, y)]
+      line = line + " " + cellChar(v) + " "
+      x2 = x2 + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+fun main() {
+  size := 15
+  board := new int[size * size]
+  moves := 0
+  player := 1
+
+  print("控制台五子棋：输入 x y（或 x,y），范围 1-" + size + "；q 退出；r 重开")
+
+  xy := new int[2]
+
+  while true {
+    render(board, size)
+
+    if player == 1 {
+      print("轮到 X（输入坐标）>")
+    } else {
+      print("轮到 O（输入坐标）>")
+    }
+
+    line := io.readLine()
+    if line == null {
+      // 兼容 EOF：当作退出
+      break
+    }
+
+    cmd := firstNonSep(line)
+    if cmd == 113 { // 'q'
+      break
+    }
+    if cmd == 81 { // 'Q'
+      break
+    }
+    if cmd == 114 { // 'r'
+      board = new int[size * size]
+      moves = 0
+      player = 1
+      continue
+    }
+    if cmd == 82 { // 'R'
+      board = new int[size * size]
+      moves = 0
+      player = 1
+      continue
+    }
+
+    ok := tryParseTwoInts(line, xy)
+    if !ok {
+      print("输入无效：请用 x y（或 x,y），例如：8 8")
+      continue
+    }
+
+    x := xy[0] - 1
+    y := xy[1] - 1
+    if x < 0 { print("坐标越界") ; continue }
+    if y < 0 { print("坐标越界") ; continue }
+    if x >= size { print("坐标越界") ; continue }
+    if y >= size { print("坐标越界") ; continue }
+
+    p := idx(size, x, y)
+    if board[p] != 0 {
+      print("该位置已有棋子")
+      continue
+    }
+
+    board[p] = player
+    moves = moves + 1
+
+    if checkWin(board, size, x, y, player) {
+      render(board, size)
+      if player == 1 {
+        print("X 获胜！输入 r 重开，或 q 退出")
+      } else {
+        print("O 获胜！输入 r 重开，或 q 退出")
+      }
+
+      // 等待下一条命令
+      while true {
+        line2 := io.readLine()
+        if line2 == null { return }
+        c2 := firstNonSep(line2)
+        if c2 == 114 { board = new int[size * size]; moves = 0; player = 1; break }
+        if c2 == 82 { board = new int[size * size]; moves = 0; player = 1; break }
+        if c2 == 113 { return }
+        if c2 == 81 { return }
+      }
+      continue
+    }
+
+    if moves >= size * size {
+      render(board, size)
+      print("平局！输入 r 重开，或 q 退出")
+      while true {
+        line3 := io.readLine()
+        if line3 == null { return }
+        c3 := firstNonSep(line3)
+        if c3 == 114 { board = new int[size * size]; moves = 0; player = 1; break }
+        if c3 == 82 { board = new int[size * size]; moves = 0; player = 1; break }
+        if c3 == 113 { return }
+        if c3 == 81 { return }
+      }
+      continue
+    }
+
+    // 换手
+    if player == 1 {
+      player = 2
+    } else {
+      player = 1
+    }
+  }
+
+  print("已退出")
+}

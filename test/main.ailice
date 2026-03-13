@@ -1,0 +1,149 @@
+namespace TestSuite.Integration
+
+import sync as sync
+import thread as thread
+import async as a
+import mem as mem
+import io as io
+import slice as slice
+
+// 1. 顶层全局声明与类型别名 (Type Alias)
+type ByteSlice = slice.Slice<u8>
+const MAX_RETRIES: int = 3
+
+// 2. 枚举 (Enum)
+enum TaskStatus {
+  Pending = 0,
+  Processing = 1,
+  Completed = 2,
+  Failed = -1,
+}
+
+// 3. 值类型结构体与构造函数 (Struct)
+struct TaskPayload {
+  id: int
+  value: int
+
+  fun TaskPayload(id: int, value: int) {
+    this.id = id
+    this.value = value
+  }
+  
+  // 修复 1：增加访问方法绕过 C# struct 字段默认 private 限制
+  fun Id(): int { return this.id }
+  fun Value(): int { return this.value }
+}
+
+// 4. 接口与关联类型 (Interface & Associated Type)
+interface IProcessor {
+  type ResultType
+  fun Process(payload: TaskPayload): ResultType
+}
+
+// 5. 类、实现接口、可见性控制与绑定关联类型 (Class & OOP)
+class FastProcessor : IProcessor {
+  public {
+    type ResultType = int
+    processCount: int
+  }
+
+  // 修复 2：显式声明 public 构造函数
+  public fun FastProcessor() {
+    this.processCount = 0
+  }
+
+  public fun Process(payload: TaskPayload): int {
+    this.processCount = this.processCount + 1
+    // 使用 Value() 方法访问
+    return payload.Value() * 2
+  }
+}
+
+// 6. 泛型函数 (修复 3：绕过关联类型约束的发射错误，直接使用 IProcessor<int>)
+fun executeProcessor(proc: IProcessor<int>, payload: TaskPayload): int {
+  return proc.Process(payload)
+}
+
+// 7. @unsafe 内存与指针操作 (Unsafe & Mem)
+@unsafe
+fun writeMagicHeader(val: u8): int {
+  // 分配内存
+  buf := mem.alloc(4)
+  // 8. 延迟执行 (Defer)
+  defer mem.free(buf) 
+  
+  // 获取指针视图并解引用赋值
+  p := mem.ptrU8(buf, 0)
+  *p = val
+  *(p + 1) = val
+  
+  return 1
+}
+
+// 9. 异步函数、异常处理与闭包 (Async, Try/Except/Finally, Closures)
+async fun asyncWorker(workerId: int, ch: sync.Chan<TaskPayload>) {
+  try {
+    // 闭包示例 (Closure / Func Type)
+    logger := fun (msg: string): string { return "[Worker " + workerId + "] " + msg }
+    
+    // 10. Channel 接收 (Sync)
+    payload := sync.recv(ch)
+    
+    // 11. 切片操作 (Slice)
+    arr := new int[3]
+    s := slice.FromArray(arr)
+    // 使用 Id() 方法访问
+    s[0] = payload.Id()
+    
+    // 异步等待
+    await a.DelayMs(50)
+    print(logger("Processed Task ID: " + s[0]))
+
+  } except (e: any) {
+    print("Worker encountered an error")
+    raise // Rethrow 测试
+  } finally {
+    print("Worker finished execution")
+  }
+}
+
+// 12. 入口函数 (Main) - 修复 4：移除 @unsafe 避免 CS4004 状态机报错
+async fun main() {
+  print("--- Starting Alice Comprehensive Test ---")
+
+  // 测试枚举与结构体
+  status := TaskStatus.Pending
+  task1 := new TaskPayload(101, 20)
+  task2 := new TaskPayload(102, 30)
+
+  // 测试 OOP 与泛型
+  proc := new FastProcessor()
+  res := executeProcessor(proc, task1)
+  print("Processor result: ")
+  print(res)
+
+  // 测试 Unsafe 与 Defer
+  writeMagicHeader(255)
+  print("Unsafe memory write successful")
+
+  // 测试并发：Channel 与 Thread
+  ch := sync.makeChan<TaskPayload>(2) // 带缓冲的 Channel
+  sync.send(ch, task2)
+
+  // Thread Spawn 发送额外数据
+  h := thread.spawn(fun () {
+    sync.send(ch, new TaskPayload(103, 40))
+  })
+
+  // 测试 Async / Go
+  go asyncWorker(1, ch)
+  go asyncWorker(2, ch)
+
+  // 等待异步任务与线程
+  await a.DelayMs(200)
+  
+  sync.close(ch)
+  h.Join()
+
+  print("--- All tests completed! ---")
+}

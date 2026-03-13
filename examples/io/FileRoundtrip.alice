@@ -1,0 +1,11 @@
+namespace ioex
+
+import io as io
+
+fun main() {
+  path := "alice_tmp_roundtrip.txt"
+  io.writeAllText(path, "hello")
+  text := io.readAllText(path)
+  print(text)
+  io.remove(path)
+}

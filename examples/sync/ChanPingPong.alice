@@ -1,0 +1,18 @@
+namespace syncex
+
+import sync as sync
+import thread as th
+
+fun main() {
+  ch := sync.makeChan<string>(0)
+
+  h := th.spawn(fun () {
+    sync.send(ch, "ping")
+  })
+
+  msg := sync.recv(ch)
+  print(msg)
+
+  sync.close(ch)
+  h.Join()
+}

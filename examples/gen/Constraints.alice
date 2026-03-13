@@ -1,0 +1,24 @@
+namespace genex
+
+interface Show {
+  fun Show(): string
+}
+
+class A {
+  public fun Show(): string { return "A" }
+}
+
+class B {
+  public fun Show(): string { return "B" }
+}
+
+fun showAll<T extends Show>(xs:T[]): string {
+  return xs[0].Show() + xs[1].Show()
+}
+
+fun main() {
+  arr:Show[] = new Show[2]
+  arr[0] = new A()
+  arr[1] = new B()
+  print(showAll(arr))
+}

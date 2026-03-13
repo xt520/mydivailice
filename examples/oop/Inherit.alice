@@ -1,0 +1,19 @@
+namespace oop
+
+class Base {
+  protected x:int = 1
+  public fun GetX(): int { return this.x }
+}
+
+class Derived : Base {
+  public fun Inc(): int {
+    this.x = this.x + 1
+    return this.x
+  }
+}
+
+fun main() {
+  d := new Derived()
+  print(d.GetX())
+  print(d.Inc())
+}

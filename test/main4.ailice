@@ -1,0 +1,25 @@
+namespace test
+
+import mem as mem
+import io as io
+
+@unsafe
+fun main() {
+  // 三重指针：ptr<ptr<ptr<u8>>>（指针的指针的指针）
+  // 这里用栈上局部变量取地址来构造多级指针，避免把“指针值”写入 NativeBuffer。
+
+  buf := mem.alloc(1)
+  defer mem.free(buf)
+
+  p := mem.ptrU8(buf, 0)
+  *p = 65
+
+  pp := &p
+  ppp := &pp
+
+  v := ***ppp
+
+  out0 := new u8[1]
+  out0[0] = v
+  print(io.utf8Decode(out0))
+}

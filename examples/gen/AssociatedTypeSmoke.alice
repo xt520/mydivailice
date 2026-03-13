@@ -1,0 +1,17 @@
+namespace genex
+
+interface IBox {
+  type Item
+}
+
+class IntBox : IBox {
+  type Item = int
+}
+
+fun idBoxItem(x: IntBox.Item): IntBox.Item {
+  return x
+}
+
+fun main() {
+  print(idBoxItem(3))
+}

@@ -1,0 +1,12 @@
+namespace genex
+
+type IntBinOp = (int,int)->int
+
+fun add(a:int, b:int): int { return a + b }
+
+fun apply<T>(a:T, b:T, f:(T,T)->T): T { return f(a, b) }
+
+fun main() {
+f:(int,int)->int = add
+  print(apply(10, 20, f))
+}

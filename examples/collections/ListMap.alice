@@ -1,0 +1,16 @@
+namespace colex
+
+import collections as c
+
+fun main() {
+  xs := new c.List<int>()
+  xs.Add(1)
+  xs.Add(2)
+  xs.Add(3)
+  print(xs.Len())
+
+  m := new c.Map<string, int>()
+  m.Set("a", 10)
+  m.Set("b", 20)
+  print(m.Get("a") + m.Get("b"))
+}

@@ -1,0 +1,31 @@
+namespace netex
+
+import net as net
+import io as io
+import thread as th
+import time as time
+
+fun main() {
+  pc := net.listenUdp("127.0.0.1", 0)
+  addr := pc.LocalAddr()
+  port := addr.Port()
+
+  h := th.spawn(fun () {
+    buf := new u8[64]
+    pkt := pc.ReadFrom(buf)
+    pc.WriteTo(io.utf8Encode("pong"), pkt.addr)
+    pc.Close()
+  })
+
+  time.sleepMs(10)
+
+  c := net.dialUdp("127.0.0.1", port)
+  c.WriteTo(io.utf8Encode("ping"), addr)
+
+  rbuf := new u8[64]
+  rp := c.ReadFrom(rbuf)
+  c.Close()
+
+  print(io.utf8DecodeN(rp.data, rp.n))
+  h.Join()
+}

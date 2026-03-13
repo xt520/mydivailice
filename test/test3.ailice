@@ -1,0 +1,169 @@
+namespace TestSuite.DataStructures
+
+// B+ 树节点
+class BNode {
+  public {
+    isLeaf: bool
+    numKeys: int
+    keys: int[]
+    vals: int[]       // 仅叶子节点存储数据
+    children: BNode[] // 仅内部节点存储子节点引用
+  }
+
+  public fun BNode(degree: int, isLeaf: bool) {
+    this.isLeaf = isLeaf
+    this.numKeys = 0
+    this.keys = new int[degree]
+    if (isLeaf) {
+      this.vals = new int[degree]
+    } else {
+      // 内部节点需要 degree + 1 个子节点槽位
+      this.children = new BNode[degree + 1]
+    }
+  }
+}
+
+// B+ 树主体
+class BPlusTree {
+  public {
+    degree: int
+    root: BNode
+  }
+
+  public fun BPlusTree(degree: int) {
+    this.degree = degree
+    this.root = new BNode(degree, true)
+  }
+
+  // 核心测试 1：树状结构的向下遍历 (Search)
+  public fun Search(key: int): int {
+    curr := this.root
+    
+    // 向下遍历直到叶子节点
+    while (curr.isLeaf == false) {
+      i := 0
+      found := false
+      while (i < curr.numKeys) {
+        if (found == false) {
+          if (key < curr.keys[i]) {
+            curr = curr.children[i]
+            found = true
+          } else {
+            i = i + 1
+          }
+        } else {
+          // 模拟 break，快速消耗掉剩余循环
+          i = curr.numKeys
+        }
+      }
+      
+      // 如果 key 比所有现有键都大，走最右侧子节点
+      if (found == false) {
+        curr = curr.children[curr.numKeys]
+      }
+    }
+
+    // 在叶子节点中进行线性查找
+    j := 0
+    while (j < curr.numKeys) {
+      if (curr.keys[j] == key) {
+        return curr.vals[j] // 命中返回
+      }
+      j = j + 1
+    }
+
+    return -1 // 未找到
+  }
+
+  // 核心测试 2：数组移位与叶子节点插入
+  // 注：为保证 v0 编译稳定，暂未加入节点满了之后的向上 Split (分裂) 逻辑
+  public fun InsertSimple(key: int, val: int): bool {
+    curr := this.root
+    
+    // 寻找应该插入的叶子节点
+    while (curr.isLeaf == false) {
+      i := 0
+      found := false
+      while (i < curr.numKeys) {
+        if (found == false) {
+          if (key < curr.keys[i]) {
+            curr = curr.children[i]
+            found = true
+          } else {
+            i = i + 1
+          }
+        } else {
+          i = curr.numKeys
+        }
+      }
+      if (found == false) {
+        curr = curr.children[curr.numKeys]
+      }
+    }
+
+    // 容量防御检查
+    if (curr.numKeys >= this.degree) {
+      print("Warning: Node is full. Tree splitting logic is bypassed for this test.")
+      return false
+    }
+
+    // 寻找插入位置
+    insertIdx := 0
+    keepSearching := true
+    while (keepSearching == true) {
+      if (insertIdx >= curr.numKeys) {
+        keepSearching = false
+      } else {
+        if (curr.keys[insertIdx] > key) {
+          keepSearching = false
+        } else {
+          insertIdx = insertIdx + 1
+        }
+      }
+    }
+
+    // 将插入位置后的元素整体向后移位（极限测试数组覆盖）
+    k := curr.numKeys
+    while (k > insertIdx) {
+      curr.keys[k] = curr.keys[k - 1]
+      curr.vals[k] = curr.vals[k - 1]
+      k = k - 1
+    }
+
+    // 写入新数据
+    curr.keys[insertIdx] = key
+    curr.vals[insertIdx] = val
+    curr.numKeys = curr.numKeys + 1
+
+    return true
+  }
+}
+
+// 启动测试
+fun main() {
+  print("--- Starting B+ Tree Data Structure Test ---")
+  
+  // 创建一个阶数为 5 的 B+ 树
+  tree := new BPlusTree(5)
+  
+  // 乱序插入数据，测试内部数组移位排序是否正确
+  tree.InsertSimple(30, 300)
+  tree.InsertSimple(10, 100)
+  tree.InsertSimple(20, 200)
+  tree.InsertSimple(5, 50)
+  
+  print("Insertions completed. Root keys count: ")
+  print(tree.root.numKeys)
+
+  // 测试查找逻辑
+  print("Searching for 20 (Expect 200): ")
+  print(tree.Search(20))
+
+  print("Searching for 5 (Expect 50): ")
+  print(tree.Search(5))
+
+  print("Searching for 99 (Expect -1): ")
+  print(tree.Search(99))
+  
+  print("--- B+ Tree Test Completed ---")
+}

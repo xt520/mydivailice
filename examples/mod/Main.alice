@@ -1,0 +1,21 @@
+namespace mod
+
+import mod.Sort as S
+import mod.Consts as C
+
+fun main() {
+  arr := [C.N, 1, 4, 2, 8]
+  n := arr.length
+  i := 0
+  while i < n {
+    j := 0
+    while j < n - i - 1 {
+      if arr[j] > arr[j + 1] {
+        S.swap(arr, j, j + 1)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  print(arr)
+}

@@ -1,0 +1,51 @@
+namespace Test.Events
+
+interface ISubscriber {
+    fun OnEvent(msg: string)
+}
+
+class EventEmitter {
+    // 测试私有函数数组（假设 v0.3 支持数组或简单集合映射到 C# List）
+    private {
+        handlers: ((string) -> int)[] 
+        // 如果数组语法还不稳，可以用单个变量测试：handler: (string) -> int
+    }
+
+    public {
+        fun Register(h: (string) -> int) {
+            // 这里测试对函数类型变量的赋值
+            this.handlers[0] = h 
+        }
+
+        fun Emit(data: string) {
+            print("[Emitter] Dispatching: " + data)
+            // 执行存储的闭包
+            res := this.handlers[0](data)
+            print("[Emitter] Handler returned code: " + res)
+        }
+    }
+}
+
+fun main() {
+    count := 0
+    
+    // 创建第一个发射器
+    bus1 := new EventEmitter()
+    bus1.Register(fun (m: string): int {
+        count = count + 1 // 闭包修改外部变量
+        print("Bus 1 received: " + m + " (Total: " + count + ")")
+        return 200
+    })
+
+    // 创建第二个发射器（测试闭包隔离）
+    bus2 := new EventEmitter()
+    local_id := "BUS_ALPHA"
+    bus2.Register(fun (m: string): int {
+        print("Bus 2 [" + local_id + "] received: " + m)
+        return 201
+    })
+
+    bus1.Emit("Hello Alice")
+    bus1.Emit("Testing again")
+    bus2.Emit("Signal from Alpha")
+}

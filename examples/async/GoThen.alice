@@ -1,0 +1,16 @@
+namespace asyncex
+
+import async as a
+import time as time
+
+fun work(x:int): int {
+  time.sleepMs(10)
+  return x + 1
+}
+
+async fun main() {
+  p := go work(1)
+  p2 := a.Then(p, fun (v:int): int { return v + 1 })
+  r := await p2
+  print(r)
+}

@@ -1,0 +1,13 @@
+namespace timeex
+
+import time as time
+
+fun main() {
+  sw := new time.Stopwatch()
+  sw.start()
+  time.sleepMs(5)
+  sw.stop()
+
+  print((sw.elapsedMs() >= 0))
+  print((time.nowUnixNs() > 0))
+}

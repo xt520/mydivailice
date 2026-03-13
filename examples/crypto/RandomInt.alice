@@ -1,0 +1,15 @@
+namespace cryptorand
+
+import crypto as crypto
+
+fun main() {
+  // [min, max)
+  v := crypto.randomInt(0, 10)
+  print((v >= 0 && v < 10))
+
+  r := new crypto.Random(123)
+  a := r.nextInt(0, 100)
+  b := r.nextInt(0, 100)
+  print(a)
+  print(b)
+}

@@ -1,0 +1,17 @@
+namespace unsafeex
+
+import mem as mem
+import io as io
+
+@unsafe
+fun main() {
+  b := io.utf8Encode("abc")
+  nb := mem.alloc(3)
+  mem.memcpy(nb, 0, b, 0, 3)
+
+  out0 := new u8[3]
+  mem.memcpyToArray(nb, 0, out0, 0, 3)
+  mem.free(nb)
+
+  print(io.utf8Decode(out0))
+}

@@ -1,0 +1,38 @@
+namespace genex
+
+interface Sequence {
+  type Item
+  fun Len(): int
+  fun Get(i:int): int
+}
+
+class IntSeq : Sequence {
+  type Item = int
+
+  public data:int[]
+
+  public fun IntSeq(a:int[]) { this.data = a }
+
+  public fun Len(): int { return this.data.length }
+  public fun Get(i:int): int { return this.data[i] }
+}
+
+fun first(s: Sequence<int>): int {
+  return s.Get(0)
+}
+
+fun sum(s: Sequence<int>): int {
+  i := 0
+  total := 0
+  while i < s.Len() {
+    total = total + s.Get(i)
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  s := new IntSeq([1, 2, 3])
+  print(first(s))
+  print(sum(s))
+}

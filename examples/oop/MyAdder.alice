@@ -1,0 +1,7 @@
+namespace oop
+
+class MyAdder {
+  public fun Add(a:int, b:int): int {
+    return a + b
+  }
+}

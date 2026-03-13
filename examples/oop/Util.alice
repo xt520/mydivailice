@@ -1,0 +1,5 @@
+namespace oop
+
+fun makePoint(x:int, y:int): Point {
+  return new Point(x, y)
+}

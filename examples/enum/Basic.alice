@@ -1,0 +1,13 @@
+namespace enumex
+
+enum Color {
+  Red = 1,
+  Green,
+  Blue = 10,
+}
+
+fun main() {
+  print((0 + Color.Red))
+  print((0 + Color.Green))
+  print((0 + Color.Blue))
+}

@@ -1,0 +1,23 @@
+namespace unsafeex
+
+import mem as mem
+import io as io
+
+@unsafe
+fun main() {
+  src := mem.alloc(3)
+  dst := mem.alloc(3)
+
+  ps := mem.ptr<u8>(src, 0)
+  *ps = 97
+  *(ps + 1) = 98
+  *(ps + 2) = 99
+
+  mem.memcpyPtr(mem.ptr<u8>(dst, 0), mem.ptr<u8>(src, 0), 3)
+
+  out0 := new u8[3]
+  mem.memcpyToArray(dst, 0, out0, 0, 3)
+  mem.free(src)
+  mem.free(dst)
+  print(io.utf8Decode(out0))
+}

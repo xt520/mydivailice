@@ -1,0 +1,9 @@
+namespace cryptoex
+
+import crypto as crypto
+import io as io
+
+fun main() {
+  h := crypto.sha256(io.utf8Encode("abc"))
+  print(h.length)
+}
