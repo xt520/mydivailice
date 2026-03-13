@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using alicec.ConsoleUi;
 using Alice.Compiler;
 
 namespace alicec;
@@ -45,6 +46,9 @@ internal static class Program
                     return PrintUsage(Console.Error);
                 }
 
+                using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "编译") : null;
+                spin?.SetDetail(Path.GetFileName(parsed.FilePath));
+
                 var compiled = AliceCompiler.CompileEntryToAssembly(
                     parsed.FilePath,
                     modulePaths: Array.Empty<string>(),
@@ -53,8 +57,11 @@ internal static class Program
 
                 if (compiled is null)
                 {
+                    spin?.Fail();
                     return 1;
                 }
+
+                spin?.Complete();
 
                 return AliceRunner.RunInProcess(compiled.AssemblyBytes, parsed.ProgramArgs);
             }
@@ -77,7 +84,10 @@ internal static class Program
                         return PrintUsage(Console.Error);
                     }
 
-                        var compiled = AliceCompiler.CompileEntryToAssembly(
+                    using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "编译") : null;
+                    spin?.SetDetail(Path.GetFileName(parsed.FilePath));
+
+                    var compiled = AliceCompiler.CompileEntryToAssembly(
                             parsed.FilePath,
                             parsed.ModulePaths,
                             emitGeneratedCSharpPath: parsed.EmitCSharpPath,
@@ -87,8 +97,11 @@ internal static class Program
 
                     if (compiled is null)
                     {
+                        spin?.Fail();
                         return 1;
                     }
+
+                    spin?.Complete();
 
                     return AliceRunner.RunInProcess(compiled.AssemblyBytes, parsed.ProgramArgs);
                 }
@@ -114,6 +127,9 @@ internal static class Program
 
                     var outputKind = global::Microsoft.CodeAnalysis.OutputKind.ConsoleApplication;
 
+                    using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "编译") : null;
+                    spin?.SetDetail(Path.GetFileName(parsed.FilePath));
+
                     var compiled = AliceCompiler.CompileEntryToAssembly(
                         parsed.FilePath,
                         parsed.ModulePaths,
@@ -124,8 +140,11 @@ internal static class Program
 
                     if (compiled is null)
                     {
+                        spin?.Fail();
                         return 1;
                     }
+
+                    spin?.Complete();
 
                     if (!string.IsNullOrWhiteSpace(parsed.OutputPath))
                     {
@@ -150,6 +169,9 @@ internal static class Program
                         return PrintUsage(Console.Error);
                     }
 
+                    using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "检查") : null;
+                    spin?.SetDetail(Path.GetFileName(parsed.FilePath));
+
                     var compiled = AliceCompiler.CompileEntryToAssembly(
                         parsed.FilePath,
                         parsed.ModulePaths,
@@ -158,11 +180,20 @@ internal static class Program
                         diagnostics: Console.Error,
                         allowUnsafe: parsed.AllowUnsafe);
 
-                    return compiled is null ? 1 : 0;
+                    if (compiled is null)
+                    {
+                        spin?.Fail();
+                        return 1;
+                    }
+                    spin?.Complete();
+                    return 0;
                 }
                 case "selftest":
                 {
-                    return SelfTest.RunAll(Console.Out, Console.Error);
+                    using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "selftest") : null;
+                    var r = SelfTest.RunAll(Console.Out, Console.Error);
+                    if (r == 0) spin?.Complete(); else spin?.Fail();
+                    return r;
                 }
                 case "bind":
                 {
@@ -176,7 +207,11 @@ internal static class Program
                 }
                 case "package":
                 {
-                    return await RunPackageAsync(rest).ConfigureAwait(false);
+                    using var spin = ProgressSpinner.IsEnabled(Console.Error) ? new ProgressSpinner(Console.Error, "打包") : null;
+                    spin?.SetDetail(string.Join(" ", rest.Take(3)));
+                    var r = await RunPackageAsync(rest).ConfigureAwait(false);
+                    if (r == 0) spin?.Complete(); else spin?.Fail();
+                    return r;
                 }
                 case "lsp":
                 {
