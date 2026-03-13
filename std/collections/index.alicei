@@ -1,0 +1,18 @@
+namespace collections
+
+class List<T> {
+  fun List()
+  fun Add(x:T)
+  fun Get(i:int): T
+  fun Set(i:int, v:T)
+  fun Len(): int
+  fun ToArray(): T[]
+}
+
+class Map<K,V> {
+  fun Map()
+  fun Set(k:K, v:V)
+  fun Get(k:K): V
+  fun Has(k:K): bool
+  fun Len(): int
+}

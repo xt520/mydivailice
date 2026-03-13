@@ -1,0 +1,9 @@
+namespace net.tls
+
+import net as net
+
+fun dial(host:string, port:int, serverName:string): net.Conn
+
+fun wrap(conn:net.Conn, serverName:string): net.Conn
+
+fun Smoke(): int

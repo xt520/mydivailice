@@ -1,0 +1,73 @@
+namespace io
+
+const OPEN_READ:int = 1
+const OPEN_WRITE:int = 2
+const OPEN_APPEND:int = 4
+const OPEN_CREATE:int = 8
+const OPEN_TRUNC:int = 16
+
+const SEEK_SET:int = 0
+const SEEK_CUR:int = 1
+const SEEK_END:int = 2
+
+interface Reader {
+  fun Read(buf:u8[]): int
+}
+
+interface Writer {
+  fun Write(buf:u8[]): int
+  fun Flush()
+}
+
+interface Closer {
+  fun Close()
+}
+
+interface ReadCloser {
+  fun Read(buf:u8[]): int
+  fun Close()
+}
+
+interface WriteCloser {
+  fun Write(buf:u8[]): int
+  fun Flush()
+  fun Close()
+}
+
+interface ReadWriteCloser {
+  fun Read(buf:u8[]): int
+  fun Write(buf:u8[]): int
+  fun Flush()
+  fun Close()
+}
+
+class File {
+  path:string
+  fun Read(buf:u8[]): int
+  fun Write(buf:u8[]): int
+  fun Flush()
+  fun Close()
+  fun Seek(offset:i64, whence:int): i64
+  fun Tell(): i64
+}
+
+fun open(path:string, flags:int): File
+fun create(path:string): File
+fun exists(path:string): bool
+fun remove(path:string)
+fun mkdir(path:string)
+fun readAllBytes(path:string): u8[]
+fun writeAllBytes(path:string, data:u8[])
+fun readAllText(path:string): string
+fun writeAllText(path:string, text:string)
+
+fun readLine(): string
+fun stdin(): Reader
+fun stdout(): Writer
+fun stderr(): Writer
+
+fun utf8Encode(s:string): u8[]
+fun utf8Decode(b:u8[]): string
+fun utf8DecodeN(b:u8[], n:int): string
+
+fun copy(dst:Writer, src:Reader): i64

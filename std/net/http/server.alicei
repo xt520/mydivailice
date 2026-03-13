@@ -1,0 +1,15 @@
+namespace net.http
+
+import net.http as http
+
+class HttpContext {
+  req:http.Request
+}
+
+class HttpResponse {
+  status:int
+  headers:string[]
+  body:string
+}
+
+fun serveOnce(host:string, port:int, handler:(http.Request)->HttpResponse): int

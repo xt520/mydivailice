@@ -1,0 +1,9 @@
+namespace sync
+
+class Chan<T> {
+}
+
+fun makeChan<T>(cap:int): Chan<T>
+fun send<T>(ch:Chan<T>, v:T)
+fun recv<T>(ch:Chan<T>): T
+fun close<T>(ch:Chan<T>)

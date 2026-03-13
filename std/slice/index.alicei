@@ -1,0 +1,13 @@
+namespace slice
+
+class Slice<T> {
+  arr:T[]
+  off:int
+  len:int
+  cap:int
+}
+
+fun FromArray<T>(a:T[]): Slice<T>
+fun SliceArray<T>(a:T[], lo:int, hi:int): Slice<T>
+fun SliceSlice<T>(s:Slice<T>, lo:int, hi:int): Slice<T>
+fun Append<T>(s:Slice<T>, v:T): Slice<T>

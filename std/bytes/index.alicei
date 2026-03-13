@@ -1,0 +1,6 @@
+namespace bytes
+
+fun readU16BE(b:u8[], off:int): u16
+fun readU32BE(b:u8[], off:int): u32
+fun writeU32BE(b:u8[], off:int, v:u32)
+fun concat(a:u8[], b:u8[]): u8[]

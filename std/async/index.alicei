@@ -1,0 +1,19 @@
+namespace async
+
+fun DelayMs(ms:int): any
+
+fun Then<TIn, TOut>(p:any, f:(TIn)->TOut): any
+fun Catch<T>(p:any, f:(any)->T): any
+fun Finally(p:any, f:()->void): any
+
+class CancelSource {
+}
+
+class CancelToken {
+}
+
+fun newCancelSource(): CancelSource
+fun cancel(src:CancelSource)
+fun token(src:CancelSource): CancelToken
+
+fun withTimeout<T>(p:any, ms:int): any

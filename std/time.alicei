@@ -1,0 +1,14 @@
+namespace time
+
+fun nowUnixMs(): i64
+fun nowUnixNs(): i64
+fun sleepMs(ms:int)
+
+class Stopwatch {
+  fun Stopwatch()
+  fun start()
+  fun stop()
+  fun reset()
+  fun elapsedMs(): i64
+  fun elapsedNs(): i64
+}

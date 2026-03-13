@@ -1,0 +1,18 @@
+namespace mem
+
+class NativeBuffer {
+  ptr:any
+  len:int
+}
+
+fun alloc(n:int): NativeBuffer
+fun free(b:NativeBuffer)
+
+fun memcpy(dst:NativeBuffer, dstOff:int, src:u8[], srcOff:int, n:int)
+fun memcpyToArray(src:NativeBuffer, srcOff:int, dst:u8[], dstOff:int, n:int)
+
+fun ptrU8(b:NativeBuffer, off:int): ptr<u8>
+
+fun ptr<T>(b:NativeBuffer, off:int): ptr<T>
+
+fun memcpyPtr(dst:ptr<u8>, src:ptr<u8>, n:int)

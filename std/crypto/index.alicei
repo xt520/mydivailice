@@ -1,0 +1,13 @@
+namespace crypto
+
+fun sha256(data:u8[]): u8[]
+fun hmacSha256(key:u8[], data:u8[]): u8[]
+fun randomBytes(n:int): u8[]
+
+fun randomInt(min:int, max:int): int
+
+class Random {
+  fun Random(seed:i64)
+  fun nextInt(min:int, max:int): int
+  fun nextBytes(n:int): u8[]
+}

@@ -1,0 +1,20 @@
+namespace net.http
+
+class Request {
+  method:string
+  url:string
+  headers:string[]
+  body:string
+}
+
+class Response {
+  status:int
+  statusText:string
+  headers:string[]
+  body:string
+}
+
+fun get(url:string): Response
+fun getText(url:string): string
+fun postText(url:string, body:string): Response
+fun request(req:Request): Response

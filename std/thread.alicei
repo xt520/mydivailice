@@ -1,0 +1,7 @@
+namespace thread
+
+class JoinHandle {
+  fun Join()
+}
+
+fun spawn(f:()->void): JoinHandle

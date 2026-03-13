@@ -1,0 +1,69 @@
+namespace net
+
+import io as io
+
+interface Addr {
+  fun Network(): string
+  fun String(): string
+  fun Host(): string
+  fun Port(): int
+}
+
+class TcpAddr {
+  host:string
+  port:int
+  fun TcpAddr(host:string, port:int)
+  fun Network(): string
+  fun String(): string
+  fun Host(): string
+  fun Port(): int
+}
+
+class UdpAddr {
+  host:string
+  port:int
+  fun UdpAddr(host:string, port:int)
+  fun Network(): string
+  fun String(): string
+  fun Host(): string
+  fun Port(): int
+}
+
+interface Conn {
+  fun Read(buf:u8[]): int
+  fun Write(buf:u8[]): int
+  fun Flush()
+  fun Close()
+
+  fun LocalAddr(): Addr
+  fun RemoteAddr(): Addr
+  fun SetReadTimeoutMs(ms:int)
+  fun SetWriteTimeoutMs(ms:int)
+}
+
+interface Listener {
+  fun Close()
+
+  fun Accept(): Conn
+  fun Addr(): Addr
+}
+
+fun dialTcp(host:string, port:int): Conn
+fun listenTcp(host:string, port:int): Listener
+fun lookupIp(host:string): string[]
+
+class Packet {
+  n:int
+  addr:Addr
+  data:u8[]
+}
+
+interface PacketConn {
+  fun Close()
+  fun LocalAddr(): Addr
+  fun ReadFrom(buf:u8[]): Packet
+  fun WriteTo(buf:u8[], addr:Addr): int
+}
+
+fun listenUdp(host:string, port:int): PacketConn
+fun dialUdp(host:string, port:int): PacketConn
